@@ -1,7 +1,7 @@
 # DocDrop
 
 <p align="center">
-  <img src="./frontend/public/preview.png" alt="DocDrop Preview" width="100%" />
+  <img src="./preview.png" alt="DocDrop Preview" width="100%" />
 </p>
 
 <p align="center">
