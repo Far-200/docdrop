@@ -217,7 +217,3 @@ end
       CleanupJob -.-> FileStorage
 
 ```
-
-```mermaid
-info
-```
