@@ -14,140 +14,140 @@
 </p>
 
 <p align="center">
-  A secure temporary document submission and print-request management system built to learn full-stack development through a realistic workflow-driven project.
+A secure temporary document submission and print-request management system built to learn full-stack development through a realistic workflow-driven project.
 </p>
 
 ---
 
-## Table of Contents
+# Table of Contents
 
-- [Overview](#overview)
-- [Why This Project Exists](#why-this-project-exists)
-- [Problem Statement](#problem-statement)
-- [Core Features](#core-features)
-- [Tech Stack](#tech-stack)
-- [Folder Structure](#folder-structure)
-- [System Architecture](#system-architecture)
-- [Technical Problems and Solutions](#technical-problems-and-solutions)
-- [Workflow](#workflow)
-- [API Design](#api-design)
-- [API Response Examples](#api-response-examples)
-- [Order Lifecycle](#order-lifecycle)
-- [Data Model](#data-model)
-- [Security Considerations](#security-considerations)
-- [Scalability Path](#scalability-path)
-- [Local Development Setup](#local-development-setup)
-- [Environment Variables](#environment-variables)
-- [Deployment](#deployment)
-- [Future Improvements](#future-improvements)
-- [Learning Goals](#learning-goals)
-- [Project Status](#project-status)
-- [License](#license)
+- Overview
+- Why This Project Exists
+- Problem Statement
+- Core Features
+- Tech Stack
+- Folder Structure
+- System Architecture
+- Technical Problems and Solutions
+- Workflow
+- API Design
+- API Response Examples
+- Order Lifecycle
+- Data Model
+- Security Considerations
+- Scalability Path
+- Local Development Setup
+- Environment Variables
+- Deployment
+- Future Improvements
+- Learning Goals
+- Project Status
+- License
 
 ---
 
-## Overview
+# Overview
 
 DocDrop is a secure temporary document submission and print-request management system.
 
 Users can:
 
-- upload a document
-- choose print options
-- receive an order ID and OTP
-- track the request status
+- Upload a document
+- Choose print options
+- Receive an order ID and OTP
+- Track the request status
 
 Admins can:
 
-- manage incoming print requests
-- update statuses as the request moves forward
-- verify OTP during delivery or handoff
-- ensure uploaded files are deleted after completion or expiry
-
-This project is inspired by the real-world problem of secure temporary print handling, but it is designed as an original educational full-stack system.
+- Manage incoming print requests
+- Update statuses as the request moves forward
+- Verify OTP during delivery or handoff
+- Ensure uploaded files are deleted after completion or expiry
 
 ---
 
-## Why This Project Exists
+# Why This Project Exists
 
 Printing documents sounds simple until the workflow becomes digital.
 
-A real print-request system has to answer practical questions such as:
+A real print-request system must answer:
 
 - How does a user upload a document safely?
 - Where is the file stored?
 - How do we avoid permanent storage of private files?
 - How do admins track order status?
-- How do we verify delivery or handoff securely?
-- How do we make sure expired or completed files are deleted?
+- How do we verify delivery securely?
+- How do we automatically delete expired documents?
 
-DocDrop is built to solve these problems in a technically clean, modular, and scalable way.
+DocDrop solves these problems through a structured full-stack architecture.
 
 ---
 
-## Problem Statement
+# Problem Statement
 
-Traditional file upload demos usually stop at **"file uploaded successfully."**
+Most file upload demos stop at:
 
-That is not enough for a realistic workflow.
+> “File uploaded successfully.”
 
-In a proper document print-request platform, the system must handle:
+But a real workflow requires much more.
+
+A document print platform must support:
 
 1. Secure temporary file upload
 2. Print option selection
-3. Metadata tracking for each request
-4. Status-based workflow management
-5. OTP verification for secure handoff
-6. Automatic cleanup of expired or completed files
-7. Separation of user and admin responsibilities
+3. Metadata tracking
+4. Order lifecycle management
+5. OTP verification
+6. Automatic cleanup of expired files
+7. Admin workflow control
 
-DocDrop is designed to solve all of these in one integrated full-stack workflow.
+DocDrop solves these problems in one integrated system.
 
 ---
 
-## Core Features
+# Core Features
 
-### User Features
+## User Features
 
-- Upload a document for printing
-- Choose print options such as:
-  - number of copies
-  - color or black & white
-  - single-sided or double-sided
-- Receive a unique order ID
-- Receive an OTP for verification
-- Track the status of an order
+- Upload documents for printing
+- Select print options
+  - Number of copies
+  - Color / Black & White
+  - Single or double-sided
+- Receive unique Order ID
+- Receive OTP for verification
+- Track order status
 
-### Admin Features
+## Admin Features
 
 - View all print requests
 - Filter orders by status
-- See full order details
-- Update order statuses
-- Verify OTP before delivery or handoff
-- Delete files after completion or expiry
+- View order details
+- Update order status
+- Verify OTP before delivery
+- Delete expired or completed files
 
-### System Features
+## System Features
 
 - Temporary file storage
 - File type and size validation
-- Metadata persistence in database
-- Scheduled cleanup of expired files
+- Metadata persistence in MongoDB
+- Scheduled cleanup jobs
 - Modular backend architecture
-- Clean separation of frontend and backend responsibilities
+- Clean frontend/backend separation
 
 ---
 
-## Tech Stack
+# Tech Stack
 
-### Frontend
+## Frontend
 
 - React
 - Vite
 - Axios
-- Tailwind CSS _(optional styling layer)_
+- Tailwind CSS _(optional)_
 
-### Backend
+## Backend
 
 - Node.js
 - Express.js
@@ -159,9 +159,9 @@ DocDrop is designed to solve all of these in one integrated full-stack workflow.
 
 ---
 
-## Folder Structure
+# Folder Structure
 
-````bash
+```bash
 docdrop/
 ├── frontend/
 │   ├── public/
@@ -180,8 +180,7 @@ docdrop/
 │   │   ├── App.jsx
 │   │   └── main.jsx
 │   ├── .env
-│   ├── package.json
-│   └── vite.config.js
+│   └── package.json
 │
 ├── backend/
 │   ├── src/
@@ -197,603 +196,217 @@ docdrop/
 │   │   ├── app.js
 │   │   └── server.js
 │   ├── .env
-│   ├── package.json
-│   └── nodemon.json
+│   └── package.json
 │
 ├── .gitignore
 └── README.md
-System Architecture
+```
 
-The application is divided into three major layers:
+# DocDrop — System Documentation
 
-1. Frontend Layer
+graph TD
+%% Define Styles
+classDef layerFill fill:#f9f9f9,stroke:#333,stroke-width:2px;
+classDef storageFill fill:#e1f5fe,stroke:#0277bd,stroke-width:2px;
+classDef processFill fill:#e8f5e9,stroke:#2e7d32,stroke-width:1px,stroke-dasharray: 5 5;
 
-The frontend is responsible for:
+    %% Main Layers
+    subgraph Frontend_Layer ["Frontend Layer (UI)"]
+        direction TB
+        UploadUI[Upload UI]:::processFill
+        PrintOptions[Print Options Selection]:::processFill
+        OrderTracking[Order Tracking]:::processFill
+        AdminDashboard[Admin Dashboard]:::processFill
+    end
+    class Frontend_Layer layerFill;
 
-collecting file upload input
+    subgraph Backend_Layer ["Backend API Layer (Express)"]
+        direction TB
+        OrderMgmt[Order Lifecycle Management]:::processFill
+        OTPLicense[OTP Generation]:::processFill
+        FileValidation[File Validation (Multer)]:::processFill
+        CleanupJob[Cleanup Scheduling (Cron)]:::processFill
+    end
+    class Backend_Layer layerFill;
 
-collecting print options
+    subgraph Storage_Layer ["Storage Layer"]
+        direction TB
+        FileStorage[(File Storage<br/>'backend/src/uploads/')]:::storageFill
+        MetadataDB[(Metadata Storage<br/>'MongoDB')]:::storageFill
+    end
+    class Storage_Layer layerFill;
 
-displaying order confirmation
+    %% Interactions
+    Frontend_Layer -->|REST API Requests| Backend_Layer
+    Backend_Layer -->|Temporarily Stores Files| FileStorage
+    Backend_Layer -->|Reads/Writes Order Data| MetadataDB
 
-showing order tracking information
+    %% External Note
+    CleanupJob -.->|Periodically Deletes Expired Files| FileStorages
 
-providing an admin dashboard interface
+## ## System Architecture
 
-The frontend does not handle business logic directly. Its responsibility is to collect user input, call the backend APIs, and render the returned data.
+The system follows a decoupled **three-layer architecture** to ensure scalability and separation of concerns.
 
-2. Backend API Layer
+### 1. Frontend Layer
 
-The backend exposes REST APIs for:
+- **Role:** User Interface & Interaction.
+- **Key Features:** Upload UI, Print options selection, Order confirmation/tracking, and Admin dashboard.
+- **Note:** The frontend is "thin" and does not contain business logic.
 
-creating print orders
+### 2. Backend API Layer
 
-tracking orders
+- **Role:** The "Brain" of the application.
+- **Responsibilities:** Order creation, OTP generation, lifecycle management, file validation, storage, cleanup scheduling, and DB communication.
 
-managing admin actions
+### 3. Storage Layer
 
-verifying OTPs
+- **File Storage:** Documents are stored temporarily at `backend/src/uploads/`.
+- **Metadata Storage (MongoDB):** Stores `orderId`, `customerName`, `filePath`, print options, `OTP`, `status`, and timestamps.
 
-deleting expired or completed files
+---
 
-The backend is responsible for:
+## ## Technical Problems and Solutions
 
-request validation
+| Problem                                 | Solution                                                              |
+| :-------------------------------------- | :-------------------------------------------------------------------- |
+| **Files remain on server forever**      | Scheduled cleanup jobs automatically delete expired files.            |
+| **Unsafe file uploads**                 | Multer middleware enforces file types, size limits, and sanitization. |
+| **Files alone cannot represent orders** | Structured metadata is linked and stored in MongoDB.                  |
+| **Order workflow chaos**                | Implementation of controlled lifecycle states (Pending → Delivered).  |
+| **Secure delivery verification**        | OTP generation during order creation for verification at delivery.    |
 
-business rules
+---
 
-file upload handling
+## ## Workflow
 
-status transition logic
+### User Workflow
 
-OTP generation and verification
+1. Upload document & select print options.
+2. File is stored temporarily; metadata is sent to backend.
+3. Order ID + OTP generated.
+4. User tracks order status via the UI.
 
-cleanup scheduling
+### Admin Workflow
 
-communication with the database
+1. View dashboard & manage active orders.
+2. Update order status (e.g., _Printing_ → _Printed_).
+3. Verify OTP upon physical delivery.
+4. System automatically deletes file after completion.
 
-3. Storage Layer
+---
 
-The storage system is split into two parts:
+## ## API Design
 
-File Storage
+### Public Endpoints
 
-Uploaded documents are stored temporarily in the backend uploads/ directory.
+- `POST /api/orders` — Create a new order.
+- `GET /api/orders/:orderId` — Fetch order details.
+- `POST /api/orders/:orderId/verify` — Verify OTP.
 
-Metadata Storage
+### Admin Endpoints
 
-Order information is stored in MongoDB, including:
+- `GET /api/admin/orders` — List all orders.
+- `GET /api/admin/orders/:orderId` — Single order view.
+- `PATCH /api/admin/orders/:orderId/status` — Update lifecycle state.
+- `DELETE /api/admin/orders/:orderId` — Manual deletion.
 
-order ID
+### Utility
 
-customer name
+- `GET /api/health` — System health check.
 
-original file name
+---
 
-stored file path
+## ## API Response Examples
 
-print options
+**Create Order (Success)**
 
-OTP
-
-current status
-
-timestamps
-
-expiry information
-
-This separation is important because files and metadata serve different responsibilities.
-
-Technical Problems and Solutions
-Problem 1: Uploaded files can remain on the server forever
-
-This is dangerous for privacy and wasteful for storage.
-
-Solution
-
-DocDrop stores uploaded files only temporarily. Every order includes expiry information, and a scheduled cleanup job regularly checks for expired or completed files and deletes them from storage.
-
-Problem 2: File uploads can be unsafe
-
-Users may upload unsupported file types, oversized files, or malicious content.
-
-Solution
-
-The backend uses Multer middleware with validation rules to:
-
-restrict allowed file types
-
-enforce maximum file size
-
-sanitize file names
-
-store files safely with generated names
-
-Problem 3: A file alone is not enough to manage an order
-
-A raw file in a folder cannot tell us:
-
-who uploaded it
-
-how many copies are needed
-
-whether it has been printed
-
-whether it has expired
-
-whether it has already been deleted
-
-Solution
-
-Each upload generates a structured metadata record stored in MongoDB. This record tracks everything needed for the file lifecycle and print workflow.
-
-Problem 4: Orders need controlled workflow states
-
-Without clear status rules, an order can jump randomly from uploaded to delivered, creating inconsistent logic and messy UI behavior.
-
-Solution
-
-DocDrop uses a status-based lifecycle such as:
-
-pending
-
-accepted
-
-printing
-
-printed
-
-out_for_delivery
-
-delivered
-
-expired
-
-cancelled
-
-deleted
-
-The backend enforces valid status transitions so the workflow remains consistent.
-
-Problem 5: Delivery or handoff needs verification
-
-If documents are private, anyone should not be able to receive them.
-
-Solution
-
-Each order gets an OTP when created. The OTP is later verified before marking the order as delivered or handed off. This provides a simple but practical security layer.
-
-Problem 6: Frontend code becomes messy when API logic is mixed into components
-
-If API calls, UI rendering, and state logic are all placed inside a single component, the frontend becomes difficult to maintain and scale.
-
-Solution
-
-The frontend separates concerns using:
-
-pages for screens
-
-reusable components for UI parts
-
-services for API calls
-
-hooks for fetching and state logic
-
-utils for helper functions
-
-This makes the frontend easier to organize, test, and debug.
-
-Problem 7: Backend code becomes unmaintainable if everything lives in one file
-
-A single Express file becomes chaotic very quickly.
-
-Solution
-
-The backend follows a layered architecture:
-
-routes define endpoints
-
-controllers handle request and response
-
-services contain business logic
-
-models define database structure
-
-middleware handles validation and errors
-
-jobs handle cleanup tasks
-
-This keeps the project modular and production-style.
-
-Workflow
-User Workflow
-
-User opens the upload page
-
-User selects a document
-
-User chooses print options
-
-Frontend sends multipart form data to the backend
-
-Backend validates the file and request body
-
-Backend stores the file temporarily
-
-Backend creates order metadata in MongoDB
-
-Backend generates an order ID and OTP
-
-Frontend displays the success response to the user
-
-Admin Workflow
-
-Admin opens the dashboard
-
-Dashboard fetches all active orders
-
-Admin views full order details
-
-Admin updates order status as work progresses
-
-Admin verifies OTP before delivery or handoff
-
-System deletes the file after completion or expiry
-
-API Design
-Public/User Endpoints
-POST /api/orders
-
-Create a new print order
-
-GET /api/orders/:orderId
-
-Get safe order details for tracking
-
-POST /api/orders/:orderId/verify
-
-Verify OTP for order handoff
-
-Admin Endpoints
-GET /api/admin/orders
-
-Get all orders
-
-GET /api/admin/orders/:orderId
-
-Get full order details
-
-PATCH /api/admin/orders/:orderId/status
-
-Update order status
-
-DELETE /api/admin/orders/:orderId
-
-Delete order and associated file
-
-Utility Endpoints
-GET /api/health
-
-Server health check
-
-API Response Examples
-Create Order Response
+```json
 {
   "success": true,
-  "message": "Order created successfully",
   "data": {
     "orderId": "DOC-7F3A21",
     "otp": "4821",
-    "status": "pending",
-    "expiresAt": "2026-03-18T14:30:00.000Z"
+    "status": "pending"
   }
 }
-Track Order Response
+```
+
+## Error Example
+
+'''json
 {
-  "success": true,
-  "data": {
-    "orderId": "DOC-7F3A21",
-    "customerName": "Farhaan Khan",
-    "copies": 2,
-    "colorMode": "bw",
-    "printSide": "single",
-    "status": "printing",
-    "createdAt": "2026-03-17T08:30:00.000Z",
-    "expiresAt": "2026-03-18T14:30:00.000Z"
-  }
+"success": false,
+"message": "Invalid file type"
 }
-OTP Verification Response
-{
-  "success": true,
-  "message": "OTP verified successfully"
-}
-Error Response Example
-{
-  "success": false,
-  "message": "Invalid file type. Only PDF files are allowed."
-}
-Order Lifecycle
 
-A print request moves through defined status stages.
+## Order Lifecycle States
 
-Example lifecycle
-pending -> accepted -> printing -> printed -> out_for_delivery -> delivered -> deleted
-Other possible endings
-pending -> cancelled -> deleted
-pending -> expired -> deleted
-accepted -> expired -> deleted
-printing -> expired -> deleted
+The system moves through a strictly defined state machine:
 
-This lifecycle ensures that every order remains predictable and easy to track.
+Happy Path: pending → accepted → printing → printed → delivered → deleted
 
-Data Model
+Alternative 1: pending → cancelled → deleted
 
-A typical order record includes:
+Alternative 2: pending → expired → deleted
 
-orderId
+## Security Considerations
 
-customerName
+Current Safeguards
+File type/size restrictions.
 
-originalFileName
+OTP verification for delivery.
 
-storedFileName
+Temporary storage (Auto-cleanup).
 
-filePath
+Future Improvements
+Admin authentication (JWT).
 
-mimeType
+API Rate limiting.
 
-fileSize
+Malware scanning for uploads.
 
-copies
+## Local Development Setup
 
-colorMode
-
-printSide
-
-otp
-
-status
-
-createdAt
-
-updatedAt
-
-expiresAt
-
-deletedAt
-
-This schema supports tracking, cleanup, and future feature expansion.
-
-Security Considerations
-
-DocDrop is not a full production security platform yet, but it includes important safeguards:
-
-restricted file types
-
-file size limits
-
-sanitized storage filenames
-
-generated OTP for verification
-
-temporary storage instead of permanent retention
-
-structured status control
-
-separated admin routes
-
-Possible Future Security Upgrades
-
-admin authentication
-
-JWT-based protected routes
-
-encryption for stored files
-
-rate limiting
-
-audit logs
-
-malware scanning
-
-Scalability Path
-
-This project starts small, but the architecture allows future upgrades such as:
-
-cloud file storage
-
-user authentication
-
-payment integration
-
-notification system
-
-printer queue management
-
-audit history
-
-delivery assignment
-
-role-based admin access
-
-The goal is to build something small, but structured enough to grow without turning into spaghetti with Wi-Fi.
-
-Local Development Setup
-1. Clone the Repository
-git clone https://github.com/Far-200/docdrop.git
+Clone Repository
+git clone [https://github.com/Far-200/docdrop.git](https://github.com/Far-200/docdrop.git)
 cd docdrop
-2. Setup the Backend
+
+## Backend Setup
+
 cd backend
 npm install
-
-Create a .env file inside the backend folder:
-
-PORT=5000
-MONGODB_URI=your_mongodb_connection_string
-NODE_ENV=development
-MAX_FILE_SIZE=10485760
-ORDER_EXPIRY_HOURS=6
-
-Run the backend:
-
 npm run dev
-3. Setup the Frontend
 
-Open a new terminal:
+## Frontend Setup
 
 cd frontend
 npm install
-
-Create a .env file inside the frontend folder:
-
-VITE_API_BASE_URL=http://localhost:5000/api
-
-Run the frontend:
-
 npm run dev
-Environment Variables
-Backend .env
+
+## Environment Variables
+
+Backend (.env)
+
+Code snippet
 PORT=5000
 MONGODB_URI=your_mongodb_connection_string
 NODE_ENV=development
 MAX_FILE_SIZE=10485760
 ORDER_EXPIRY_HOURS=6
-Frontend .env
+Frontend (.env)
+
+Code snippet
 VITE_API_BASE_URL=http://localhost:5000/api
-Deployment
-Frontend Deployment
 
-The frontend can be deployed on:
+## Learning Goals
 
-Vercel
+Frontend: File upload handling, API integration, Reusable components.
 
-Netlify
+Backend: Express architecture, MongoDB schemas, Cron jobs for cleanup.
 
-Build command:
+Full Stack: System design and temporary resource management.
 
-npm run build
-Backend Deployment
-
-The backend can be deployed on:
-
-Render
-
-Railway
-
-Cyclic
-
-VPS / cloud server
-
-Recommended production requirements:
-
-environment variables configured
-
-MongoDB Atlas connection
-
-persistent file storage or cloud object storage for production use
-
-CORS configured for frontend domain
-
-Production Notes
-
-For production, local file storage is okay for learning but not ideal for scale.
-
-A stronger production setup would use:
-
-cloud storage for uploaded files
-
-database-backed audit logging
-
-admin authentication
-
-HTTPS-only deployment
-
-rate limiting and input sanitization
-
-Future Improvements
-
-admin authentication and authorization
-
-user login system
-
-payment flow integration
-
-PDF preview
-
-order history
-
-email or SMS notifications
-
-cloud storage migration
-
-downloadable invoices
-
-queue prioritization
-
-analytics dashboard
-
-Learning Goals
-
-This project is intentionally designed to teach practical full-stack development through a realistic workflow.
-
-Frontend
-
-form handling
-
-file upload with React
-
-API integration
-
-status-based UI rendering
-
-reusable component design
-
-Backend
-
-Express routing
-
-controller/service separation
-
-file upload handling with Multer
-
-MongoDB schema design
-
-OTP generation and verification
-
-cron-based cleanup jobs
-
-structured workflow logic
-
-Full Stack
-
-connecting React with Express
-
-designing a real-world workflow
-
-handling temporary resources safely
-
-thinking in systems, not just isolated pages
-
-Project Status
-
-Current status:
-
-architecture planned
-
-folder structure designed
-
-implementation in progress
-
-License
+## License
 
 This project is created for learning and portfolio purposes.
-
-
-Tiny note so your README doesn’t do a dramatic fainting spell on GitHub:
-if you don’t yet have `frontend/public/preview.png`, either add that image or remove this part:
-
-```md
-<p align="center">
-  <img src="./frontend/public/preview.png" alt="DocDrop Preview" width="100%" />
-</p>
-````
