@@ -190,7 +190,7 @@ docdrop/
 
 DocDrop follows a three-layer architecture.
 
-'''mermaid
+```mermaid
 graph TD
 subgraph Frontend[ Frontend Layer ]
 UploadUI[Upload UI]
@@ -216,7 +216,8 @@ end
       Backend --> MetadataDB
       CleanupJob -.-> FileStorage
 
-'''
-'''mermaid
+```
+
+```mermaid
 info
-'''
+```
