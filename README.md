@@ -33,15 +33,10 @@ A secure temporary document submission and print-request management system built
 - API Design
 - API Response Examples
 - Order Lifecycle
-- Data Model
 - Security Considerations
-- Scalability Path
 - Local Development Setup
 - Environment Variables
-- Deployment
-- Future Improvements
 - Learning Goals
-- Project Status
 - License
 
 ---
@@ -55,13 +50,13 @@ Users can:
 - Upload a document
 - Choose print options
 - Receive an order ID and OTP
-- Track the request status
+- Track request status
 
 Admins can:
 
 - Manage incoming print requests
-- Update statuses as the request moves forward
-- Verify OTP during delivery or handoff
+- Update statuses
+- Verify OTP during delivery
 - Ensure uploaded files are deleted after completion or expiry
 
 ---
@@ -101,8 +96,6 @@ A document print platform must support:
 6. Automatic cleanup of expired files
 7. Admin workflow control
 
-DocDrop solves these problems in one integrated system.
-
 ---
 
 # Core Features
@@ -126,15 +119,6 @@ DocDrop solves these problems in one integrated system.
 - Update order status
 - Verify OTP before delivery
 - Delete expired or completed files
-
-## System Features
-
-- Temporary file storage
-- File type and size validation
-- Metadata persistence in MongoDB
-- Scheduled cleanup jobs
-- Modular backend architecture
-- Clean frontend/backend separation
 
 ---
 
@@ -202,211 +186,37 @@ docdrop/
 └── README.md
 ```
 
-# DocDrop — System Documentation
+## System Architecture
 
+DocDrop follows a three-layer architecture.
+
+'''mermaid
 graph TD
-%% Define Styles
-classDef layerFill fill:#f9f9f9,stroke:#333,stroke-width:2px;
-classDef storageFill fill:#e1f5fe,stroke:#0277bd,stroke-width:2px;
-classDef processFill fill:#e8f5e9,stroke:#2e7d32,stroke-width:1px,stroke-dasharray: 5 5;
-
-    %% Main Layers
-    subgraph Frontend_Layer ["Frontend Layer (UI)"]
-        direction TB
-        UploadUI[Upload UI]:::processFill
-        PrintOptions[Print Options Selection]:::processFill
-        OrderTracking[Order Tracking]:::processFill
-        AdminDashboard[Admin Dashboard]:::processFill
-    end
-    class Frontend_Layer layerFill;
-
-    subgraph Backend_Layer ["Backend API Layer (Express)"]
-        direction TB
-        OrderMgmt[Order Lifecycle Management]:::processFill
-        OTPLicense[OTP Generation]:::processFill
-        FileValidation[File Validation (Multer)]:::processFill
-        CleanupJob[Cleanup Scheduling (Cron)]:::processFill
-    end
-    class Backend_Layer layerFill;
-
-    subgraph Storage_Layer ["Storage Layer"]
-        direction TB
-        FileStorage[(File Storage<br/>'backend/src/uploads/')]:::storageFill
-        MetadataDB[(Metadata Storage<br/>'MongoDB')]:::storageFill
-    end
-    class Storage_Layer layerFill;
-
-    %% Interactions
-    Frontend_Layer -->|REST API Requests| Backend_Layer
-    Backend_Layer -->|Temporarily Stores Files| FileStorage
-    Backend_Layer -->|Reads/Writes Order Data| MetadataDB
-
-    %% External Note
-    CleanupJob -.->|Periodically Deletes Expired Files| FileStorages
-
-## ## System Architecture
-
-The system follows a decoupled **three-layer architecture** to ensure scalability and separation of concerns.
-
-### 1. Frontend Layer
-
-- **Role:** User Interface & Interaction.
-- **Key Features:** Upload UI, Print options selection, Order confirmation/tracking, and Admin dashboard.
-- **Note:** The frontend is "thin" and does not contain business logic.
-
-### 2. Backend API Layer
-
-- **Role:** The "Brain" of the application.
-- **Responsibilities:** Order creation, OTP generation, lifecycle management, file validation, storage, cleanup scheduling, and DB communication.
-
-### 3. Storage Layer
-
-- **File Storage:** Documents are stored temporarily at `backend/src/uploads/`.
-- **Metadata Storage (MongoDB):** Stores `orderId`, `customerName`, `filePath`, print options, `OTP`, `status`, and timestamps.
-
----
-
-## ## Technical Problems and Solutions
-
-| Problem                                 | Solution                                                              |
-| :-------------------------------------- | :-------------------------------------------------------------------- |
-| **Files remain on server forever**      | Scheduled cleanup jobs automatically delete expired files.            |
-| **Unsafe file uploads**                 | Multer middleware enforces file types, size limits, and sanitization. |
-| **Files alone cannot represent orders** | Structured metadata is linked and stored in MongoDB.                  |
-| **Order workflow chaos**                | Implementation of controlled lifecycle states (Pending → Delivered).  |
-| **Secure delivery verification**        | OTP generation during order creation for verification at delivery.    |
-
----
-
-## ## Workflow
-
-### User Workflow
-
-1. Upload document & select print options.
-2. File is stored temporarily; metadata is sent to backend.
-3. Order ID + OTP generated.
-4. User tracks order status via the UI.
-
-### Admin Workflow
-
-1. View dashboard & manage active orders.
-2. Update order status (e.g., _Printing_ → _Printed_).
-3. Verify OTP upon physical delivery.
-4. System automatically deletes file after completion.
-
----
-
-## ## API Design
-
-### Public Endpoints
-
-- `POST /api/orders` — Create a new order.
-- `GET /api/orders/:orderId` — Fetch order details.
-- `POST /api/orders/:orderId/verify` — Verify OTP.
-
-### Admin Endpoints
-
-- `GET /api/admin/orders` — List all orders.
-- `GET /api/admin/orders/:orderId` — Single order view.
-- `PATCH /api/admin/orders/:orderId/status` — Update lifecycle state.
-- `DELETE /api/admin/orders/:orderId` — Manual deletion.
-
-### Utility
-
-- `GET /api/health` — System health check.
-
----
-
-## ## API Response Examples
-
-**Create Order (Success)**
-
-```json
-{
-  "success": true,
-  "data": {
-    "orderId": "DOC-7F3A21",
-    "otp": "4821",
-    "status": "pending"
-  }
-}
-```
-
-## Error Example
-
-'''json
-{
-"success": false,
-"message": "Invalid file type"
-}
-
-## Order Lifecycle States
-
-The system moves through a strictly defined state machine:
-
-Happy Path: pending → accepted → printing → printed → delivered → deleted
-
-Alternative 1: pending → cancelled → deleted
-
-Alternative 2: pending → expired → deleted
-
-## Security Considerations
-
-Current Safeguards
-File type/size restrictions.
-
-OTP verification for delivery.
-
-Temporary storage (Auto-cleanup).
-
-Future Improvements
-Admin authentication (JWT).
-
-API Rate limiting.
-
-Malware scanning for uploads.
-
-## Local Development Setup
-
-Clone Repository
-git clone [https://github.com/Far-200/docdrop.git](https://github.com/Far-200/docdrop.git)
-cd docdrop
-
-## Backend Setup
-
-cd backend
-npm install
-npm run dev
-
-## Frontend Setup
-
-cd frontend
-npm install
-npm run dev
-
-## Environment Variables
-
-Backend (.env)
-
-Code snippet
-PORT=5000
-MONGODB_URI=your_mongodb_connection_string
-NODE_ENV=development
-MAX_FILE_SIZE=10485760
-ORDER_EXPIRY_HOURS=6
-Frontend (.env)
-
-Code snippet
-VITE_API_BASE_URL=http://localhost:5000/api
-
-## Learning Goals
-
-Frontend: File upload handling, API integration, Reusable components.
-
-Backend: Express architecture, MongoDB schemas, Cron jobs for cleanup.
-
-Full Stack: System design and temporary resource management.
-
-## License
-
-This project is created for learning and portfolio purposes.
+subgraph Frontend[ Frontend Layer ]
+UploadUI[Upload UI]
+PrintOptions[Print Options]
+OrderTracking[Order Tracking]
+AdminDashboard[Admin Dashboard]
+end
+
+      subgraph Backend[ Backend API Layer ]
+          OrderMgmt[Order Lifecycle]
+          OTPGen[OTP Generation]
+          FileValidation[File Validation]
+          CleanupJob[Cleanup Cron Job]
+      end
+
+      subgraph Storage[ Storage Layer ]
+          FileStorage[(Uploads Folder)]
+          MetadataDB[(MongoDB)]
+      end
+
+      Frontend -->|REST API| Backend
+      Backend --> FileStorage
+      Backend --> MetadataDB
+      CleanupJob -.-> FileStorage
+
+'''
+'''mermaid
+info
+'''
